@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Lists</title>
+</head>
+
+<body>
+    <h1>To-Do Lists</h1>
+    <table width="100%">
+      <tr><th width="40%">
+    <h2>Create a New List</h2>
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <label>List Name:</label>
+        <input type="text" name="name" required><br><br>
+        <label>Status:</label>
+        <select name="status" required>
+            <option value="active">Active</option>
+            <option value="complete">Complete</option>
+        </select><br><br>
+        <label>Items:</label>
+        <textarea name="items" rows="5" cols="40" required></textarea><br><br>
+        <label>Attach a File:</label>
+        <input type="file" name="attachment"><br><br>
+        <button type="submit">Create List</button>
+    </form>
+  </th>
+  <th width="60%">
+    <% if (lists.length > 0) { %>
+        <h2>Edit or Delete Existing Lists</h2>
+        <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Items</th>
+                <th>Attachment</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% lists.forEach(function(list) { %>
+                <tr>
+                  <td><%= list.name %></td>
+                  <td><%= list.status %></td>
+                  <td><%= list.items %></td>
+                  <td><a href="/uploads/<%= list.attachment %>"><%= list.attachment %></a></td>
+                  <td><%= list.createdAt.toDateString() %></td>
+                  <td>
+                    <a href="/edit/<%= list.id %>">Edit</a>
+                    <form method="POST" action="/delete/<%= list.id %>">
+                      <button type="submit">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+    <% } else { %>
+            <p>No lists yet.</p>
+    <% } %>
+
+    <div class="pagination">
+        <% if (page > 1) { %>
+            <a href="?pageSize=<%= pageSize %>&page=<%= page - 1 %>">&laquo; Prev</a>
+        <% } %>
+        <% for (let i=1; i <= pageCount; i++) { %>
+            <% if (i===parseInt(page)) { %>
+                <a href="?pageSize=<%= pageSize %>&page=<%= i %>" class="active">
+                    <%= i %>
+                </a>
+            <% } else { %>
+                <a href="?pageSize=<%= pageSize %>&page=<%= i %>">
+                    <%= i %>
+                </a>
+            <% } %>
+        <% } %>
+        <% if (page < pageCount) { %>
+            <a href="?pageSize=<%= pageSize %>&page=<%= page + 1 %>">Next
+                &raquo;</a>
+        <% } %>
+    </div>
+
+    <form method="GET" action="/">
+        <label for="pageSize">Lists per page:</label>
+        <select id="pageSize" name="pageSize" onchange="this.form.submit()">
+            <option value="5" <% if (pageSize==5) { %>selected<% } %>>5</option>
+            <option value="10" <% if (pageSize==10) { %>selected<% } %>>10</option>
+            <option value="20" <% if (pageSize==20) { %>selected<% } %>>20</option>
+        </select>
+    </form>
+  </th></tr>
+  </table>
+    <p><a href="/login">Logout</a></p>
+</body>
+
+</html>
